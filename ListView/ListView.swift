@@ -7,12 +7,16 @@
 //
 
 import UIKit
+
+
+
 let zeroframe=CGRect.init(x: 0, y: 0, width: 0, height: 0)
 
 
 protocol ListViewDidSelectDelegate {
     
-    func ListViewDidSelect(namecode:String)
+    func ListViewDidSelect(tag:Int,indexPathRow:Int)
+    
 }
 
 class ListView: UIView,UITableViewDelegate,UITableViewDataSource,UIScrollViewDelegate {
@@ -153,17 +157,32 @@ class ListView: UIView,UITableViewDelegate,UITableViewDataSource,UIScrollViewDel
         
         if tableView==leftTableView {
             let cell = ListCell.init(style: UITableViewCellStyle.default, reuseIdentifier: "listcell", dataAry: leftData[indexPath.row] as! NSArray, width: lbwidth!, height: lbheight!, isDouble: _isDouble!)
+            cell.buttonclick={tag in
+                
+            
+                
+            }
             return cell
         }else if tableView==rightTableView{
         
             let cell = ListCell.init(style: UITableViewCellStyle.default, reuseIdentifier: "listcell", dataAry: rightData[indexPath.row] as! NSArray, width: lbwidth!, height: lbheight!, isDouble: false)
+            cell.buttonclick={tag in
+                
+              self.delegate?.ListViewDidSelect(tag: tag, indexPathRow: indexPath.row)
+                
+            }
+            
             return cell
         
         
         }else{
         
             let cell = ListCell.init(style: UITableViewCellStyle.default, reuseIdentifier: "listcell", dataAry: [["text":"\(indexPath.row+1)","color":UIColor.black]], width: lbwidth!, height: lbheight!, isDouble: false)
-        
+              cell.buttonclick={tag in
+                
+                
+                
+             }
              return cell
         }
         
@@ -305,7 +324,7 @@ class ListView: UIView,UITableViewDelegate,UITableViewDataSource,UIScrollViewDel
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         
-        delegate?.ListViewDidSelect(namecode: "")
+       
         
     }
     

@@ -7,17 +7,30 @@
 //
 
 import UIKit
-
+import Just
+import Alamofire
 protocol GetListViewDataDelegate {
     func getListViewData(data:NSArray)
 }
-
+typealias colorBlock = (Double)->(UIColor)
 class ListViewViewModel: NSObject {
 
     var delegate:GetListViewDataDelegate?
     
     func loadData(path:String,show:NSArray){
     
+        Alamofire.request("https://httpbin.org/get").responseJSON { response in
+            print(response.request!)  // original URL request
+            print(response.response!) // HTTP URL response
+            print(response.data ?? false)     // server data
+            print(response.result)   // result of response serialization
+            
+            if let JSON = response.result.value {
+                print("JSON: \(JSON)")
+            }
+        }
+  
+        
      let data = NSData.init(contentsOfFile: path)! as Data
      let dataAry =  try? JSONSerialization.jsonObject(with: data, options:JSONSerialization.ReadingOptions(rawValue: 0))
         if dataAry==nil {

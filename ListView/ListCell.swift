@@ -44,6 +44,48 @@ extension UIView{
     
     }
 
+    class func CustomButtonView(dataAry:NSArray
+        ,width:Double,height:Double,isDouble:Bool)->UIView
+    {
+       let customView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: width*Double(dataAry.count), height: height))
+        for item in dataAry.enumerated() {
+            
+            let tempDic = item.element as! NSDictionary
+            if isDouble {
+                
+                let button = UIButton.init(type: .custom)
+                button.frame=CGRect.init(x: width*Double(item.offset/2), y: Double(item.offset%2)*height/2, width: width, height: height/2)
+                let str = tempDic["text"] as? String
+                button.setTitle(str, for: .normal)
+                button.setTitleColor(UIColor.black, for: .normal)
+                button.titleLabel?.font=UIFont.systemFont(ofSize: 16)
+                
+                if item.offset==1 {
+                    button.titleLabel?.font=UIFont.systemFont(ofSize: 10)
+                    button.setTitleColor(UIColor.lightGray, for: .normal)
+                
+                    
+                }
+                button.tag=1000+item.offset
+                customView.addSubview(button)
+            }else{
+            
+              let button = UIButton.init(type: .custom)
+                button.frame=CGRect.init(x: width*Double(item.offset), y: 0, width: width, height: height)
+               
+                button.setTitle(tempDic["text"] as? String, for: .normal)
+             
+                button.setTitleColor(tempDic["color"] as? UIColor, for: .normal)
+                button.titleLabel?.font=UIFont.systemFont(ofSize: 16)
+                button.tag=1000+item.offset
+                customView.addSubview(button)
+            }
+            
+            
+        }
+    
+         return customView
+    }
     class func CustomLabelView(dataAry:NSArray,width:Double,height:Double,isDouble:Bool)->UIView{
     
         let customView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: width*Double(dataAry.count), height: height))
@@ -90,18 +132,35 @@ extension UIView{
 
 
 
-
+typealias ListCellButtonClick = (Int)->()
 class ListCell: UITableViewCell {
 
     
+    var buttonclick:ListCellButtonClick?
     init(style: UITableViewCellStyle, reuseIdentifier: String?,dataAry:NSArray,width:Double,height:Double,isDouble:Bool) {
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.separatorInset=UIEdgeInsetsMake(0, 0, 0, 0)
-        let cell = UIView.CustomLabelView(dataAry: dataAry, width: width, height: height, isDouble: isDouble)
+        let cell = UIView.CustomButtonView(dataAry: dataAry, width: width, height: height, isDouble: isDouble)
+        
+        
+        for button in cell.subviews {
+            
+            let btn = button as! UIButton
+            
+            btn.addTarget(self, action: #selector(onButton(sender:)), for: .touchUpInside)
+            
+        }
         
         self.contentView.addSubview(cell)
         
+    }
+    func onButton(sender:UIButton){
+    
+    
+         self.buttonclick!(sender.tag)
+       
+    
     }
     
     required init?(coder aDecoder: NSCoder) {
